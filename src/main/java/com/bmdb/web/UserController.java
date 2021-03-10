@@ -32,9 +32,11 @@ public class UserController {
 		return userRepo.findByUsernameAndPassword(username, password);
 	}
 	
-	
-	
-	
+	// authenticate via POST
+	@PostMapping("/login")
+	public User login(@RequestBody User u) {
+		return userRepo.findByUsernameAndPassword(u.getUsername(), u.getPassword());
+	}
 	
 	// get user by id
 	@GetMapping("/{id}")
