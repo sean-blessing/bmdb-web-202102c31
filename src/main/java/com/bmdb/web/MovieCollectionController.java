@@ -45,9 +45,16 @@ public class MovieCollectionController {
 	// add a movieCollection
 	@PostMapping("/")
 	public MovieCollection addMovieCollection(@RequestBody MovieCollection mc) {
-		User u = mc.getUser();
 		//save mc
 		movieCollectionRepo.save(mc);
+		// recalculate collection value
+		recalculateCollectionValue(mc);
+		
+		return mc;
+	}
+	
+	private void recalculateCollectionValue(MovieCollection mc) {
+		User u = mc.getUser();
 		// get all mc's for this user
 		List<MovieCollection> mcs = movieCollectionRepo.
 				findAllByUserId(u.getId());
@@ -64,13 +71,14 @@ public class MovieCollectionController {
 		// save user
 		userRepo.save(u);
 		
-		return mc;
 	}
 	
 	// update a movieCollection
 	@PutMapping("/")
-	public MovieCollection updateMovieCollection(@RequestBody MovieCollection a) {
-		return movieCollectionRepo.save(a);
+	public MovieCollection updateMovieCollection(@RequestBody MovieCollection mc) {
+		movieCollectionRepo.save(mc);
+		recalculateCollectionValue(mc);
+		return mc;
 	}
 	
 	// delete a movieCollection
@@ -79,6 +87,7 @@ public class MovieCollectionController {
 		Optional<MovieCollection> mc = movieCollectionRepo.findById(id);
 		if (mc.isPresent()) {
 			movieCollectionRepo.deleteById(id);
+			recalculateCollectionValue(mc.get());
 		}
 		return mc.get();
 	}
